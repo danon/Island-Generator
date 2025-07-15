@@ -29,7 +29,7 @@ def generate_island(mapa, cx, cy, radius, neighbours, iter):
 						
 			for i in range(1, neighbours):
 				
-				angle = np.random.uniform(0, 360)
+				angle = np.random.uniform(0, 2*np.pi)
 				r = radius*np.random.uniform(1/2, 6/8)
 				cx2 = cx + 2*r*np.sin(angle)
 				cy2 = cy + 2*r*np.cos(angle)
