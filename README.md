@@ -149,7 +149,7 @@
 ```
 
 ## Technologie
-Program stworzono w języku Python z wykorzystaniem biblioteki numpy.  
+Program stworzono w języku Python3
   
 ## Licencja
 Licencja Otwarta – Uznanie autorstwa  
