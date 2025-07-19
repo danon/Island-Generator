@@ -52,7 +52,7 @@ def generate_island(cx, cy, radius, neighbours, iter):
 
             generate_island(cx2, cy2, r, nn, iter - 1)
 
-def add_sands():
+def add_sands_to(mapa):
     for y in range(0, map_hgh):
         for x in range(0, map_wdt):
             if mapa[y][x] == grass and char_in_range(mapa, water, 2, x, y):
@@ -76,7 +76,7 @@ def generate_map():
     iterations = radius / pow(radius / 8, 2)
 
     generate_island(cx, cy, radius, ngbrs, iterations)
-    add_sands()
+    add_sands_to(mapa)
 
 def draw_map(renderer):
     for y in range(map_hgh):
