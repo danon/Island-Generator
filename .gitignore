@@ -1,12 +1,15 @@
-# Files and directories ignored when uploading the repository to GitHub
+# Project
+.idea/
+*.iml
 
-# Visual Studio Projects Files
+# Visual Studio
 *.sln
 *.pyproj
-
-# Directories generater by Visual Studio
 .vs/
 x64/
 Debug/
 Release/
 build/
+
+# Python
+.venv/
