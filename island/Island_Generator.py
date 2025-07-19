@@ -78,7 +78,7 @@ def generate_map():
     generate_island(cx, cy, radius, ngbrs, iterations)
     add_sands_to(mapa)
 
-def draw_map(renderer):
+def draw_map(renderer, mapa):
     for y in range(map_hgh):
         for x in range(map_wdt):
             tile = mapa[y][x]
@@ -112,7 +112,7 @@ def run_application(window_color: sdl2.ext.Color):
         generate_map()
         renderer.color = window_color
         renderer.clear()
-        draw_map(renderer)
+        draw_map(renderer, mapa)
         renderer.present()
         time.sleep(1)
 
