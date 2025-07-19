@@ -109,19 +109,17 @@ def char_in_range(mapa, width, height, char, r, x, y) -> bool:
 
     return False
 
-def draw_map(renderer, mapa, width, height, tile_size):
+def draw_map(renderer, mapa, width: int, height: int, tile_size: int):
     for y in range(height):
         for x in range(width):
             tile = mapa[y][x]
+            renderer.color = tile_color(tile)
+            renderer.fill(sdl2.SDL_Rect(tile_size * x, tile_size * y, tile_size, tile_size))
 
-            if tile == Tile.WATER:
-                renderer.color = sdl2.ext.Color(64, 64, 192)
-
-            if tile == Tile.SAND:
-                renderer.color = sdl2.ext.Color(192, 192, 128)
-
-            if tile == Tile.GRASS:
-                renderer.color = sdl2.ext.Color(64, 128, 64)
-
-            rect = sdl2.SDL_Rect(tile_size * x, tile_size * y, tile_size, tile_size)
-            renderer.fill(rect)
+def tile_color(tile: Tile) -> sdl2.ext.Color:
+    if tile == Tile.WATER:
+        return sdl2.ext.Color(64, 64, 192)
+    if tile == Tile.SAND:
+        return sdl2.ext.Color(192, 192, 128)
+    if tile == Tile.GRASS:
+        return sdl2.ext.Color(64, 128, 64)
