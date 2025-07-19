@@ -8,7 +8,6 @@ import sdl2.ext
 import numpy as np
 import time
 
-WINDOW_COLOR = sdl2.ext.Color(48, 48, 48)
 WINDOW_SIZE = (600, 480)
 
 tile_size = 8
@@ -117,5 +116,5 @@ def run_application(window_color: sdl2.ext.Color):
 
 def main():
     run_application(
-        WINDOW_COLOR
+        window_color=sdl2.ext.Color(48, 48, 48),
     )
