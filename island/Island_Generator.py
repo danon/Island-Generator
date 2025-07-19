@@ -35,7 +35,7 @@ def char_in_range(mapa, char, r, x, y) -> bool:
 
     return False
 
-def generate_island(cx, cy, radius, neighbours, iter):
+def generate_island(mapa, cx, cy, radius, neighbours, iter):
     if iter > 0:
         for y in range(int(cy - radius), int(cy + radius)):
             for x in range(int(cx - radius), int(cx + radius)):
@@ -50,7 +50,7 @@ def generate_island(cx, cy, radius, neighbours, iter):
             cx2 = cx + 2 * r * np.sin(angle)
             cy2 = cy + 2 * r * np.cos(angle)
 
-            generate_island(cx2, cy2, r, nn, iter - 1)
+            generate_island(mapa, cx2, cy2, r, nn, iter - 1)
 
 def add_sands_to(mapa):
     for y in range(0, map_hgh):
@@ -59,7 +59,6 @@ def add_sands_to(mapa):
                 mapa[y][x] = sands
 
 def generate_map():
-    global mapa
     mapa = clear_map(map_wdt, map_hgh)
 
     if map_wdt < map_hgh:
@@ -75,8 +74,9 @@ def generate_map():
     ngbrs = np.random.randint(4, 7)
     iterations = radius / pow(radius / 8, 2)
 
-    generate_island(cx, cy, radius, ngbrs, iterations)
+    generate_island(mapa, cx, cy, radius, ngbrs, iterations)
     add_sands_to(mapa)
+    return mapa
 
 def draw_map(renderer, mapa):
     for y in range(map_hgh):
@@ -109,7 +109,7 @@ def run_application(window_color: sdl2.ext.Color):
                 sdl2.ext.quit()
                 sys.exit(0)
 
-        generate_map()
+        mapa = generate_map()
         renderer.color = window_color
         renderer.clear()
         draw_map(renderer, mapa)
