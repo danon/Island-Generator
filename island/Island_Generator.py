@@ -10,8 +10,6 @@ import time
 
 WINDOW_SIZE = (600, 480)
 
-tile_size = 8
-
 water = '.'
 sands = ':'
 grass = '#'
@@ -95,6 +93,7 @@ def run_application(
         window_color: sdl2.ext.Color,
         width: int,
         height: int,
+        tile_size: int,
 ):
     sdl2.ext.init()
     window = sdl2.ext.Window("Island Generator", WINDOW_SIZE)
@@ -117,8 +116,10 @@ def run_application(
         time.sleep(1)
 
 def main():
+    tile_size = 8
     run_application(
         window_color=sdl2.ext.Color(48, 48, 48),
         width=int(WINDOW_SIZE[0] / tile_size),
-        height=int(WINDOW_SIZE[1] / tile_size)
+        height=int(WINDOW_SIZE[1] / tile_size),
+        tile_size=tile_size
     )
