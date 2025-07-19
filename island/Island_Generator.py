@@ -34,22 +34,38 @@ def run_application(
     sdl2.ext.init()
     window = sdl2.ext.Window("Island Generator", window_size)
     window.show()
-
     renderer = sdl2.ext.Renderer(window)
-
     while True:
         events = sdl2.ext.get_events()
         for event in events:
             if event.type == sdl2.SDL_QUIT:
                 sdl2.ext.quit()
                 sys.exit(0)
-
-        mapa = generate_full_map(width, height)
         renderer.color = window_color
         renderer.clear()
-        draw_map(renderer, mapa, width, height, tile_size)
+        draw_map(
+            renderer,
+            generate_map(width, height),
+            width,
+            height,
+            tile_size)
         renderer.present()
         time.sleep(1)
+
+def generate_map(width: int, height: int):
+    mapa = generate_filled_map(width, height, Tile.WATER)
+    radius = min(width, height) * 1 / 4
+    generate_island(
+        mapa,
+        width,
+        height,
+        width / 2,
+        height / 2,
+        radius=radius,
+        neighbours=np.random.randint(4, 7),
+        iterations=radius / pow(radius / 8, 2))
+    add_sands_to(mapa, width, height)
+    return mapa
 
 def generate_filled_map(width: int, height: int, tile: Tile):
     map = np.empty((height, width), dtype=str)
@@ -58,20 +74,18 @@ def generate_filled_map(width: int, height: int, tile: Tile):
             map[y][x] = tile
     return map
 
-def char_in_range(mapa, width, height, char, r, x, y) -> bool:
-    for yy in range(y - r, y + r + 1):
-        for xx in range(x - r, x + r + 1):
-            if 0 <= xx < width and 0 <= yy < height and mapa[yy][xx] == char:
-                return True
+def add_sands_to(mapa, width, height):
+    for y in range(0, height):
+        for x in range(0, width):
+            if mapa[y][x] == Tile.GRASS and char_in_range(mapa, width, height, Tile.WATER, 2, x, y):
+                mapa[y][x] = Tile.SAND
 
-    return False
-
-def generate_island(mapa, width, height, cx, cy, radius, neighbours, iter):
-    if iter > 0:
-        for y in range(int(cy - radius), int(cy + radius)):
-            for x in range(int(cx - radius), int(cx + radius)):
+def generate_island(mapa, width, height, center_x, center_y, radius, neighbours, iterations):
+    if iterations > 0:
+        for y in range(int(center_y - radius), int(center_y + radius)):
+            for x in range(int(center_x - radius), int(center_x + radius)):
                 if 0 <= y < height and 0 <= x < width:
-                    if np.pow(cx - x, 2) + np.pow(cy - y, 2) < np.pow(radius, 2) * 0.995:
+                    if np.pow(center_x - x, 2) + np.pow(center_y - y, 2) < np.pow(radius, 2) * 0.995:
                         mapa[y][x] = Tile.GRASS
 
         for i in range(1, int(neighbours)):
@@ -81,31 +95,19 @@ def generate_island(mapa, width, height, cx, cy, radius, neighbours, iter):
                 mapa,
                 width,
                 height,
-                cx + 2 * r * np.sin(angle),
-                cy + 2 * r * np.cos(angle),
+                center_x + 2 * r * np.sin(angle),
+                center_y + 2 * r * np.cos(angle),
                 r,
                 np.random.randint(4, 7),
-                iter - 1)
+                iterations - 1)
 
-def add_sands_to(mapa, width, height):
-    for y in range(0, height):
-        for x in range(0, width):
-            if mapa[y][x] == Tile.GRASS and char_in_range(mapa, width, height, Tile.WATER, 2, x, y):
-                mapa[y][x] = Tile.SAND
+def char_in_range(mapa, width, height, char, r, x, y) -> bool:
+    for yy in range(y - r, y + r + 1):
+        for xx in range(x - r, x + r + 1):
+            if 0 <= xx < width and 0 <= yy < height and mapa[yy][xx] == char:
+                return True
 
-def generate_full_map(width, height):
-    mapa = generate_filled_map(width, height, Tile.WATER)
-    radius = min(width, height) * 1 / 4
-
-    center_x = width / 2
-    center_y = height / 2
-
-    ngbrs = np.random.randint(4, 7)
-    iterations = radius / pow(radius / 8, 2)
-
-    generate_island(mapa, width, height, center_x, center_y, radius, ngbrs, iterations)
-    add_sands_to(mapa, width, height)
-    return mapa
+    return False
 
 def draw_map(renderer, mapa, width, height, tile_size):
     for y in range(height):
