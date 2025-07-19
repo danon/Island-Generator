@@ -28,7 +28,7 @@ def clear_map():
 			mapa[y][x] = '.'
 	return
 
-def charInRange(char, r, x, y):
+def char_in_range(char, r, x, y):
 	for yy in range(y-r, y+r+1):
 		for xx in range(x-r, x+r+1):
 			if xx>=0 and yy>=0 and xx<map_wdt and yy<map_hgh and mapa[yy][xx] == char:
@@ -53,15 +53,12 @@ def generate_island(cx, cy, radius, neighbours, iter):
 				cy2 = cy + 2*r*np.cos(angle)
 				
 				generate_island(cx2, cy2, r, nn, iter-1)
-	return
 
 def add_sands():
 	for y in range(0,map_hgh):
 		for x in range(0,map_wdt):	
-			if mapa[y][x]== grass and charInRange(water, 2, x, y):
+			if mapa[y][x]== grass and char_in_range(water, 2, x, y):
 				mapa[y][x] = sands
-			
-	return
 
 ##############################
 		
@@ -83,14 +80,13 @@ def generate_map():
 		
 	generate_island(cx, cy, radius, ngbrs, iterations)
 	add_sands()
-	return
 	
 ##############################
 
 def draw_map(renderer):
     
-    for y in range(0,map_hgh):
-        for x in range(0,map_wdt):
+    for y in range(map_hgh):
+        for x in range(map_wdt):
             tile = mapa[y][x]
             
             if tile == water:
@@ -104,8 +100,6 @@ def draw_map(renderer):
             
             rect = sdl2.SDL_Rect(tile_size*x, tile_size*y, tile_size, tile_size)
             renderer.fill(rect)
-
-    return
     
 ##############################
 
