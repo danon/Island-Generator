@@ -14,7 +14,6 @@ tile_size = 8
 
 map_wdt = int(WINDOW_SIZE[0] / tile_size)
 map_hgh = int(WINDOW_SIZE[1] / tile_size)
-mapa = np.empty((map_hgh, map_wdt), dtype=str)
 
 water = '.'
 sands = ':'
@@ -27,19 +26,19 @@ def clear_map(width: int, height: int):
             mapa[y][x] = '.'
     return mapa
 
-def char_in_range(mapa, char, r, x, y) -> bool:
+def char_in_range(mapa, width, height, char, r, x, y) -> bool:
     for yy in range(y - r, y + r + 1):
         for xx in range(x - r, x + r + 1):
-            if 0 <= xx < map_wdt and 0 <= yy < map_hgh and mapa[yy][xx] == char:
+            if 0 <= xx < width and 0 <= yy < height and mapa[yy][xx] == char:
                 return True
 
     return False
 
-def generate_island(mapa, cx, cy, radius, neighbours, iter):
+def generate_island(mapa, width, height, cx, cy, radius, neighbours, iter):
     if iter > 0:
         for y in range(int(cy - radius), int(cy + radius)):
             for x in range(int(cx - radius), int(cx + radius)):
-                if 0 <= y < map_hgh and 0 <= x < map_wdt:
+                if 0 <= y < height and 0 <= x < width:
                     if np.pow(cx - x, 2) + np.pow(cy - y, 2) < np.pow(radius, 2) * 0.995:
                         mapa[y][x] = '#'
 
@@ -50,37 +49,37 @@ def generate_island(mapa, cx, cy, radius, neighbours, iter):
             cx2 = cx + 2 * r * np.sin(angle)
             cy2 = cy + 2 * r * np.cos(angle)
 
-            generate_island(mapa, cx2, cy2, r, nn, iter - 1)
+            generate_island(mapa, width, height, cx2, cy2, r, nn, iter - 1)
 
-def add_sands_to(mapa):
-    for y in range(0, map_hgh):
-        for x in range(0, map_wdt):
-            if mapa[y][x] == grass and char_in_range(mapa, water, 2, x, y):
+def add_sands_to(mapa, width, height):
+    for y in range(0, height):
+        for x in range(0, width):
+            if mapa[y][x] == grass and char_in_range(mapa, width, height, water, 2, x, y):
                 mapa[y][x] = sands
 
-def generate_map():
-    mapa = clear_map(map_wdt, map_hgh)
+def generate_map(width, height):
+    mapa = clear_map(width, height)
 
-    if map_wdt < map_hgh:
-        radius = map_wdt
+    if width < height:
+        radius = width
     else:
-        radius = map_hgh
+        radius = height
 
     radius = radius * 1 / 4
 
-    cx = map_wdt / 2
-    cy = map_hgh / 2
+    cx = width / 2
+    cy = height / 2
 
     ngbrs = np.random.randint(4, 7)
     iterations = radius / pow(radius / 8, 2)
 
-    generate_island(mapa, cx, cy, radius, ngbrs, iterations)
-    add_sands_to(mapa)
+    generate_island(mapa, width, height, cx, cy, radius, ngbrs, iterations)
+    add_sands_to(mapa, width, height)
     return mapa
 
-def draw_map(renderer, mapa):
-    for y in range(map_hgh):
-        for x in range(map_wdt):
+def draw_map(renderer, mapa, width, height):
+    for y in range(height):
+        for x in range(width):
             tile = mapa[y][x]
 
             if tile == water:
@@ -109,10 +108,10 @@ def run_application(window_color: sdl2.ext.Color):
                 sdl2.ext.quit()
                 sys.exit(0)
 
-        mapa = generate_map()
+        mapa = generate_map(map_wdt, map_hgh)
         renderer.color = window_color
         renderer.clear()
-        draw_map(renderer, mapa)
+        draw_map(renderer, mapa, map_wdt, map_hgh)
         renderer.present()
         time.sleep(1)
 
