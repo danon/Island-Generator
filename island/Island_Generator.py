@@ -34,6 +34,9 @@ class Map:
     def tile_at(self, cell: Cell) -> Tile:
         return self.mapa[cell.y][cell.x]
 
+    def valid(self, x: int, y: int) -> bool:
+        return 0 <= y < self.height and 0 <= x < self.width
+
     def set_tile(self, cell: Cell, tile: Tile) -> None:
         self.mapa[cell.y][cell.x] = tile
 
@@ -50,12 +53,9 @@ class Map:
             self.set_tile(cell, tile)
 
     def is_tile_in_range(self, cell: Cell, range_: int, tile: Tile) -> bool:
-        x = cell.x
-        y = cell.y
-        for yy in range(y - range_, y + range_ + 1):
-            for xx in range(x - range_, x + range_ + 1):
-                cell = Cell(xx, yy)
-                if 0 <= xx < self.width and 0 <= yy < self.height and self.tile_at(cell) == tile:
+        for yy in range(cell.y - range_, cell.y + range_ + 1):
+            for xx in range(cell.x - range_, cell.x + range_ + 1):
+                if self.valid(xx, yy) and self.tile_at(Cell(xx, yy)) == tile:
                     return True
 
         return False
@@ -99,11 +99,11 @@ def run_application(
 def generate_map(width: int, height: int) -> Map:
     map = Map(width, height)
     map.fill(Tile.WATER)
-    add_grass_to(map, map.shortest_side() / 4)
+    add_grass_to(map, map.shortest_side() // 4)
     add_sands_to(map)
     return map
 
-def add_grass_to(map: Map, radius: int) -> Map:
+def add_grass_to(map: Map, radius: int):
     generate_island(
         map,
         center_x=map.width / 2,
@@ -120,11 +120,8 @@ def add_sands_to(map: Map):
 
 def generate_island(map: Map, center_x, center_y, radius, neighbours, iterations):
     if iterations > 0:
-        for y in range(int(center_y - radius), int(center_y + radius)):
-            for x in range(int(center_x - radius), int(center_x + radius)):
-                if 0 <= y < map.height and 0 <= x < map.width:
-                    if np.pow(center_x - x, 2) + np.pow(center_y - y, 2) < np.pow(radius, 2) * 0.995:
-                        map.set_tile(Cell(x, y), Tile.GRASS)
+        for cell in grass_cells(map, center_x, center_y, radius):
+            map.set_tile(cell, Tile.GRASS)
 
         for i in range(1, int(neighbours)):
             angle = np.random.uniform(0, 2 * np.pi)
@@ -136,6 +133,13 @@ def generate_island(map: Map, center_x, center_y, radius, neighbours, iterations
                 r,
                 np.random.randint(4, 7),
                 iterations - 1)
+
+def grass_cells(map: Map, center_x, center_y, radius) -> Iterator[Cell]:
+    for y in range(int(center_y - radius), int(center_y + radius)):
+        for x in range(int(center_x - radius), int(center_x + radius)):
+            if map.valid(x, y):
+                if np.pow(center_x - x, 2) + np.pow(center_y - y, 2) < np.pow(radius, 2) * 0.995:
+                    yield Cell(x, y)
 
 def draw_map(renderer, map: Map, tile_size: int):
     for cell in map.all_cells():
