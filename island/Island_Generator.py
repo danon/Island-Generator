@@ -53,21 +53,15 @@ def add_sands_to(mapa, width, height):
 
 def generate_map(width, height):
     mapa = clear_map(width, height)
+    radius = min(width, height) * 1 / 4
 
-    if width < height:
-        radius = width
-    else:
-        radius = height
-
-    radius = radius * 1 / 4
-
-    cx = width / 2
-    cy = height / 2
+    center_x = width / 2
+    center_y = height / 2
 
     ngbrs = np.random.randint(4, 7)
     iterations = radius / pow(radius / 8, 2)
 
-    generate_island(mapa, width, height, cx, cy, radius, ngbrs, iterations)
+    generate_island(mapa, width, height, center_x, center_y, radius, ngbrs, iterations)
     add_sands_to(mapa, width, height)
     return mapa
 
