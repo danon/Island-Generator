@@ -77,7 +77,7 @@ def generate_filled_map(width: int, height: int, tile: Tile):
 def add_sands_to(mapa, width, height):
     for y in range(0, height):
         for x in range(0, width):
-            if mapa[y][x] == Tile.GRASS and char_in_range(mapa, width, height, Tile.WATER, 2, x, y):
+            if mapa[y][x] == Tile.GRASS and tile_in_range(mapa, width, height, Tile.WATER, 2, x, y):
                 mapa[y][x] = Tile.SAND
 
 def generate_island(mapa, width, height, center_x, center_y, radius, neighbours, iterations):
@@ -101,10 +101,10 @@ def generate_island(mapa, width, height, center_x, center_y, radius, neighbours,
                 np.random.randint(4, 7),
                 iterations - 1)
 
-def char_in_range(mapa, width, height, char, r, x, y) -> bool:
+def tile_in_range(mapa, width, height, tile: Tile, r, x, y) -> bool:
     for yy in range(y - r, y + r + 1):
         for xx in range(x - r, x + r + 1):
-            if 0 <= xx < width and 0 <= yy < height and mapa[yy][xx] == char:
+            if 0 <= xx < width and 0 <= yy < height and mapa[yy][xx] == tile:
                 return True
 
     return False
