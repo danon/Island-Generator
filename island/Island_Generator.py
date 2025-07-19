@@ -94,7 +94,7 @@ def draw_map(renderer):
             rect = sdl2.SDL_Rect(tile_size * x, tile_size * y, tile_size, tile_size)
             renderer.fill(rect)
 
-def main():
+def run_application(window_color: sdl2.ext.Color):
     sdl2.ext.init()
     window = sdl2.ext.Window("Island Generator", WINDOW_SIZE)
     window.show()
@@ -109,8 +109,13 @@ def main():
                 sys.exit(0)
 
         generate_map()
-        renderer.color = WINDOW_COLOR
+        renderer.color = window_color
         renderer.clear()
         draw_map(renderer)
         renderer.present()
         time.sleep(1)
+
+def main():
+    run_application(
+        WINDOW_COLOR
+    )
