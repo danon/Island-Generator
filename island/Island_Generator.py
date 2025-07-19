@@ -13,12 +13,50 @@ class Tile(enum.StrEnum):
     SAND = ':'
     GRASS = '#'
 
-def clear_map(width: int, height: int):
-    mapa = np.empty((height, width), dtype=str)
+def main():
+    window_size = (600, 480)
+    tile_size = 8
+    run_application(
+        window_color=sdl2.ext.Color(48, 48, 48),
+        width=int(window_size[0] / tile_size),
+        height=int(window_size[1] / tile_size),
+        tile_size=tile_size,
+        window_size=window_size,
+    )
+
+def run_application(
+        window_color: sdl2.ext.Color,
+        width: int,
+        height: int,
+        tile_size: int,
+        window_size,
+):
+    sdl2.ext.init()
+    window = sdl2.ext.Window("Island Generator", window_size)
+    window.show()
+
+    renderer = sdl2.ext.Renderer(window)
+
+    while True:
+        events = sdl2.ext.get_events()
+        for event in events:
+            if event.type == sdl2.SDL_QUIT:
+                sdl2.ext.quit()
+                sys.exit(0)
+
+        mapa = generate_full_map(width, height)
+        renderer.color = window_color
+        renderer.clear()
+        draw_map(renderer, mapa, width, height, tile_size)
+        renderer.present()
+        time.sleep(1)
+
+def generate_filled_map(width: int, height: int, tile: Tile):
+    map = np.empty((height, width), dtype=str)
     for y in range(0, height):
         for x in range(0, width):
-            mapa[y][x] = Tile.WATER
-    return mapa
+            map[y][x] = tile
+    return map
 
 def char_in_range(mapa, width, height, char, r, x, y) -> bool:
     for yy in range(y - r, y + r + 1):
@@ -39,11 +77,15 @@ def generate_island(mapa, width, height, cx, cy, radius, neighbours, iter):
         for i in range(1, int(neighbours)):
             angle = np.random.uniform(0, 2 * np.pi)
             r = radius * np.random.uniform(1 / 2, 6 / 8)
-            nn = np.random.randint(4, 7)
-            cx2 = cx + 2 * r * np.sin(angle)
-            cy2 = cy + 2 * r * np.cos(angle)
-
-            generate_island(mapa, width, height, cx2, cy2, r, nn, iter - 1)
+            generate_island(
+                mapa,
+                width,
+                height,
+                cx + 2 * r * np.sin(angle),
+                cy + 2 * r * np.cos(angle),
+                r,
+                np.random.randint(4, 7),
+                iter - 1)
 
 def add_sands_to(mapa, width, height):
     for y in range(0, height):
@@ -51,8 +93,8 @@ def add_sands_to(mapa, width, height):
             if mapa[y][x] == Tile.GRASS and char_in_range(mapa, width, height, Tile.WATER, 2, x, y):
                 mapa[y][x] = Tile.SAND
 
-def generate_map(width, height):
-    mapa = clear_map(width, height)
+def generate_full_map(width, height):
+    mapa = generate_filled_map(width, height, Tile.WATER)
     radius = min(width, height) * 1 / 4
 
     center_x = width / 2
@@ -81,41 +123,3 @@ def draw_map(renderer, mapa, width, height, tile_size):
 
             rect = sdl2.SDL_Rect(tile_size * x, tile_size * y, tile_size, tile_size)
             renderer.fill(rect)
-
-def run_application(
-        window_color: sdl2.ext.Color,
-        width: int,
-        height: int,
-        tile_size: int,
-        window_size,
-):
-    sdl2.ext.init()
-    window = sdl2.ext.Window("Island Generator", window_size)
-    window.show()
-
-    renderer = sdl2.ext.Renderer(window)
-
-    while True:
-        events = sdl2.ext.get_events()
-        for event in events:
-            if event.type == sdl2.SDL_QUIT:
-                sdl2.ext.quit()
-                sys.exit(0)
-
-        mapa = generate_map(width, height)
-        renderer.color = window_color
-        renderer.clear()
-        draw_map(renderer, mapa, width, height, tile_size)
-        renderer.present()
-        time.sleep(1)
-
-def main():
-    window_size = (600, 480)
-    tile_size = 8
-    run_application(
-        window_color=sdl2.ext.Color(48, 48, 48),
-        width=int(window_size[0] / tile_size),
-        height=int(window_size[1] / tile_size),
-        tile_size=tile_size,
-        window_size=window_size,
-    )
