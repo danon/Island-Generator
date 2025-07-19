@@ -94,22 +94,23 @@ def draw_map(renderer):
             rect = sdl2.SDL_Rect(tile_size * x, tile_size * y, tile_size, tile_size)
             renderer.fill(rect)
 
-sdl2.ext.init()
-window = sdl2.ext.Window("Island Generator", WINDOW_SIZE)
-window.show()
+def main():
+    sdl2.ext.init()
+    window = sdl2.ext.Window("Island Generator", WINDOW_SIZE)
+    window.show()
 
-renderer = sdl2.ext.Renderer(window)
+    renderer = sdl2.ext.Renderer(window)
 
-while True:
-    events = sdl2.ext.get_events()
-    for event in events:
-        if event.type == sdl2.SDL_QUIT:
-            sdl2.ext.quit()
-            sys.exit(0)
+    while True:
+        events = sdl2.ext.get_events()
+        for event in events:
+            if event.type == sdl2.SDL_QUIT:
+                sdl2.ext.quit()
+                sys.exit(0)
 
-    generate_map()
-    renderer.color = WINDOW_COLOR
-    renderer.clear()
-    draw_map(renderer)
-    renderer.present()
-    time.sleep(1)
+        generate_map()
+        renderer.color = WINDOW_COLOR
+        renderer.clear()
+        draw_map(renderer)
+        renderer.present()
+        time.sleep(1)
