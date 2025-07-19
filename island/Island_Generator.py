@@ -71,38 +71,12 @@ class Map:
 def main():
     window_size = (600, 480)
     tile_size = 8
-    run_application(
-        window_color=sdl2.ext.Color(48, 48, 48),
-        width=int(window_size[0] / tile_size),
-        height=int(window_size[1] / tile_size),
-        tile_size=tile_size,
-        window_size=window_size,
-    )
-
-def run_application(
-        window_color: sdl2.ext.Color,
-        width: int,
-        height: int,
-        tile_size: int,
-        window_size,
-):
-    sdl2.ext.init()
-    window = sdl2.ext.Window("Island Generator", window_size)
-    window.show()
-    renderer = sdl2.ext.Renderer(window)
+    width = int(window_size[0] / tile_size)
+    height = int(window_size[1] / tile_size)
+    renderer = sdl_init_renderer(window_size)
     while True:
-        for event in sdl2.ext.get_events():
-            if event.type == sdl2.SDL_QUIT:
-                sdl2.ext.quit()
-                sys.exit(0)
-        renderer.color = window_color
-        renderer.clear()
-        draw_map(
-            renderer,
-            generate_map(width, height),
-            tile_size)
-        renderer.present()
-        time.sleep(1)
+        map = generate_map(width, height)
+        render_map(renderer, map, tile_size)
 
 def generate_map(width: int, height: int) -> Map:
     map = Map(width, height)
@@ -148,7 +122,24 @@ def grass_points(map: Map, center: Point, radius: int) -> Iterator[Point]:
             if np.pow(center.x - point.x, 2) + np.pow(center.y - point.y, 2) < np.pow(radius, 2) * 0.995:
                 yield Point(point.x, point.y)
 
-def draw_map(renderer, map: Map, tile_size: int):
+def sdl_init_renderer(window_size: tuple[int, int]) -> sdl2.ext.Renderer:
+    sdl2.ext.init()
+    window = sdl2.ext.Window("Island Generator", window_size)
+    window.show()
+    return sdl2.ext.Renderer(window)
+
+def render_map(renderer: sdl2.ext.Renderer, map: Map, tile_size: int):
+    for event in sdl2.ext.get_events():
+        if event.type == sdl2.SDL_QUIT:
+            sdl2.ext.quit()
+            sys.exit(0)
+    renderer.color = sdl2.ext.Color(48, 48, 48)
+    renderer.clear()
+    render_map_tiles(renderer, map, tile_size)
+    renderer.present()
+    time.sleep(1)
+
+def render_map_tiles(renderer, map: Map, tile_size: int):
     for point in map.all_points():
         renderer.color = tile_color(map.tile_at(point))
         renderer.fill(sdl2.SDL_Rect(
