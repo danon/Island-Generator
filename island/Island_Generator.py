@@ -12,9 +12,6 @@ WINDOW_SIZE = (600, 480)
 
 tile_size = 8
 
-map_wdt = int(WINDOW_SIZE[0] / tile_size)
-map_hgh = int(WINDOW_SIZE[1] / tile_size)
-
 water = '.'
 sands = ':'
 grass = '#'
@@ -122,6 +119,6 @@ def run_application(
 def main():
     run_application(
         window_color=sdl2.ext.Color(48, 48, 48),
-        width=map_wdt,
-        height=map_hgh
+        width=int(WINDOW_SIZE[0] / tile_size),
+        height=int(WINDOW_SIZE[1] / tile_size)
     )
