@@ -74,7 +74,7 @@ def generate_map(width, height):
     add_sands_to(mapa, width, height)
     return mapa
 
-def draw_map(renderer, mapa, width, height):
+def draw_map(renderer, mapa, width, height, tile_size):
     for y in range(height):
         for x in range(width):
             tile = mapa[y][x]
@@ -112,7 +112,7 @@ def run_application(
         mapa = generate_map(width, height)
         renderer.color = window_color
         renderer.clear()
-        draw_map(renderer, mapa, width, height)
+        draw_map(renderer, mapa, width, height, tile_size)
         renderer.present()
         time.sleep(1)
 
