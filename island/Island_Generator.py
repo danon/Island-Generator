@@ -140,7 +140,11 @@ def generate_island(map: Map, center_x, center_y, radius, neighbours, iterations
 def draw_map(renderer, map: Map, tile_size: int):
     for cell in map.all_cells():
         renderer.color = tile_color(map.tile_at(cell))
-        renderer.fill(sdl2.SDL_Rect(tile_size * cell.x, tile_size * cell.y, tile_size, tile_size))
+        renderer.fill(sdl2.SDL_Rect(
+            tile_size * cell.x,
+            tile_size * cell.y,
+            tile_size,
+            tile_size))
 
 def tile_color(tile: Tile) -> sdl2.ext.Color:
     if tile == Tile.WATER:
