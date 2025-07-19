@@ -20,11 +20,12 @@ water = '.'
 sands = ':'
 grass = '#'
 
-def clear_map():
-    for y in range(0, map_hgh):
-        for x in range(0, map_wdt):
+def clear_map(width: int, height: int):
+    mapa = np.empty((height, width), dtype=str)
+    for y in range(0, height):
+        for x in range(0, width):
             mapa[y][x] = '.'
-    return
+    return mapa
 
 def char_in_range(char, r, x, y):
     for yy in range(y - r, y + r + 1):
@@ -58,7 +59,8 @@ def add_sands():
                 mapa[y][x] = sands
 
 def generate_map():
-    clear_map()
+    global mapa
+    mapa = clear_map(map_wdt, map_hgh)
 
     if map_wdt < map_hgh:
         radius = map_wdt
